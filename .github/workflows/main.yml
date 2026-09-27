@@ -50,7 +50,14 @@ jobs:
           OPENSSL_CONF: "/dev/null"
         run: ./mvnw -B clean verify
 
-      # Step 7: Analyze code with SonarQube Cloud
+      # Step 7: Switch to Java 11 for SonarQube Cloud
+      - name: Set up JDK 11 for SonarQube
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # Step 8: Analyze code with SonarQube Cloud
       - name: SonarQube Cloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -61,7 +68,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN
 
-      # Step 8: Package production WAR
+      # Step 9: Package production WAR
       - name: Package Production WAR
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -69,7 +76,7 @@ jobs:
           OPENSSL_CONF: "/dev/null"
         run: ./mvnw -B package -Pprod -DskipTests
 
-      # Step 9: Upload WAR
+      # Step 10: Upload WAR
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
