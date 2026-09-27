@@ -42,7 +42,7 @@ jobs:
       - name: Make Maven Wrapper Executable
         run: chmod +x mvnw
 
-      # Step 6: Run verification build
+      # Step 6: Run verification build with Java 8
       - name: Build with Maven
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -68,7 +68,15 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN
 
-      # Step 9: Package production WAR
+      # Step 9: Switch back to Java 8 for the old application
+      - name: Set up JDK 8 for Production Packaging
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Step 10: Package production WAR
       - name: Package Production WAR
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -76,7 +84,7 @@ jobs:
           OPENSSL_CONF: "/dev/null"
         run: ./mvnw -B package -Pprod -DskipTests
 
-      # Step 10: Upload WAR
+      # Step 11: Upload WAR
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
