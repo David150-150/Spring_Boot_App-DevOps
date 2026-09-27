@@ -50,7 +50,20 @@ jobs:
           OPENSSL_CONF: "/dev/null"
         run: ./mvnw -B clean verify
 
-      # Step 7: Package production WAR
+
+
+      # Step 7: Analyze code with SonarQube
+      - name: SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          ./mvnw -B sonar:sonar \
+            -Dsonar.projectKey=great-big-example-application \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.token=$SONAR_TOKEN
+
+      # Step 8: Package production WAR
       - name: Package Production WAR
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
@@ -58,7 +71,7 @@ jobs:
           OPENSSL_CONF: "/dev/null"
         run: ./mvnw -B package -Pprod -DskipTests
 
-      # Step 8: Upload WAR
+      # Step 9: Upload WAR
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
