@@ -90,3 +90,20 @@ jobs:
         with:
           name: great-big-example-app-prod
           path: target/*.war
+
+      # Step 12: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 13: Build and push Docker image
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            kusi150/great-big:latest
+            kusi150/great-big:${{ github.sha }}
